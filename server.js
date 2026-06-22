@@ -353,6 +353,10 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`\n  EmoConnect (Groq)  ->  http://localhost:${PORT}\n`);
-});
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`\n  EmoConnect (Groq)  ->  http://localhost:${PORT}\n`);
+  });
+}
