@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" role="img" aria-label="EmoConnect">
+  <defs>
+    <linearGradient id="ec-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#5B21B6"/>
+    </linearGradient>
+    <linearGradient id="ec-shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="56" height="56" rx="13" fill="url(#ec-bg)"/>
+
+  <!-- Subtle inner highlight for depth -->
+  <rect width="56" height="28" rx="13" fill="url(#ec-shine)"/>
+
+  <!-- Heartbeat / ECG pulse mark -->
+  <!-- Baseline at y=28. Peaks and valleys balanced across the 56×56 canvas. -->
+  <polyline
+    points="6,28 13,28 17,23 20,28 22,11 25,39 28,28 32,23 36,28 50,28"
+    fill="none"
+    stroke="rgba(255,255,255,0.96)"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
