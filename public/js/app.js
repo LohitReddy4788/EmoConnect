@@ -344,55 +344,14 @@ const App = (() => {
         throw new Error(err.error || `HTTP ${res.status}`);
       }
 
+      const data = await res.json();
       showTyping(false);
 
-      const group  = createBotGroup();
-      const bubble = group.querySelector('.msg-bubble');
-      const cursor = document.createElement('span');
-      cursor.className = 'cursor';
-      bubble.appendChild(cursor);
-
-      const reader  = res.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-      let buf      = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buf += decoder.decode(value, { stream: true });
-        const lines = buf.split('\n');
-        buf = lines.pop();
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const raw = line.slice(6).trim();
-          if (raw === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(raw);
-            if (parsed.error) {
-              cursor.remove();
-              bubble.innerHTML = `<p style="color:var(--red)">${esc(parsed.error)}</p>`;
-              break;
-            }
-            if (parsed.text) {
-              fullText += parsed.text;
-              bubble.innerHTML = esc(fullText).replace(/\n/g, '<br>');
-              bubble.appendChild(cursor);
-              scrollToBottom(false);
-            }
-          } catch (_) { /* skip */ }
-        }
-      }
-
-      cursor.remove();
-      if (!fullText) {
-        bubble.innerHTML = `<p style="color:var(--red)">No response received. Please check your API key in the .env file and restart the server.</p>`;
+      if (data.error) {
+        appendBotMessage(data.error);
       } else {
-        bubble.innerHTML = md(fullText);
+        appendBotMessage(data.text || 'No response received.');
       }
-      finalizeBotGroup(group, fullText);
       scrollToBottom(true);
       await refreshSidebar();
 

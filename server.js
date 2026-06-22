@@ -296,13 +296,6 @@ app.post('/api/chat', async (req, res) => {
     session.title = userMessage.length > 55 ? userMessage.slice(0, 55) + '…' : userMessage;
   }
 
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();
-
-  let fullResponse = '';
-
   try {
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
@@ -312,24 +305,17 @@ app.post('/api/chat', async (req, res) => {
       })),
     ];
 
-    const stream = await groq.chat.completions.create({
+    const completion = await groq.chat.completions.create({
       model:       'llama-3.3-70b-versatile',
       messages,
-      stream:      true,
+      stream:      false,
       max_tokens:  1500,
       temperature: 0.9,
     });
 
-    for await (const chunk of stream) {
-      const text = chunk.choices[0]?.delta?.content || '';
-      if (text) {
-        fullResponse += text;
-        res.write(`data: ${JSON.stringify({ text })}\n\n`);
-      }
-    }
-
+    const fullResponse = completion.choices[0]?.message?.content || '';
     session.history.push({ role: 'assistant', content: fullResponse });
-    res.write('data: [DONE]\n\n');
+    res.json({ text: fullResponse });
 
   } catch (err) {
     console.error('[chat error]', err.message);
@@ -341,9 +327,7 @@ app.post('/api/chat', async (req, res) => {
       msg = 'Rate limit reached. Please wait a moment and try again.';
     }
 
-    res.write(`data: ${JSON.stringify({ error: msg })}\n\n`);
-  } finally {
-    res.end();
+    res.status(500).json({ error: msg });
   }
 });
 
