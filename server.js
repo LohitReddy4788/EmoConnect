@@ -309,7 +309,7 @@ app.post('/api/chat', async (req, res) => {
       model:       'llama-3.3-70b-versatile',
       messages,
       stream:      false,
-      max_tokens:  1500,
+      max_tokens:  800,
       temperature: 0.9,
     });
 
